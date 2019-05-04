@@ -13,10 +13,15 @@ def read_training_data(filename):
         ii=0
         for val in inputfile:
             val=val.strip().split()
-            if val[0] == 'Al' or val[0] == 'Ge' or val[0] == 'Si':
+            if val[0] == 'Ge':
                 atype[ii] = 0
-            else:
+            elif val[0] == 'Sb':
                 atype[ii] = 1
+            elif val[0] == 'Te':
+                atype[ii] = 2
+            else:
+                print("Invalid atom type")
+                exit(1)
             position[ii,:] = np.array(val[1:4]).astype('float32')
             force[ii,:] = np.array(val[4:7]).astype('float32')
             ii += 1

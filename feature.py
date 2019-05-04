@@ -1,24 +1,25 @@
 import numpy as np
 import math
 
-#mu=[1.0,1.5,2.0,2.5,3.0,3.5,4.0,4.5,5.0,5.5,6.0,6.5,7.0,7.5]
 mu=[1.5,2.0,2.3,2.5,3.0,3.3,3.5,3.7,4.0,4.25,4.5,4.75,5.0,5.5,6.0,6.5,7.0,7.5,8.0]
-#mu=[1.0,2.0,2.4,3.0,3.8,4.50,5.0,5.50,6.0,6.50,7.00,7.50]
 eta=[0.5,1.0,2.0,3.0,8.0]
 mu_list = len(mu)
 eta_list = len(eta)
 
-RCUTOFF_DEFAULT = 9.50  #9.50
+RCUTOFF_DEFAULT = 10.00  #9.50
 RCUTOFF_DAMP = 15.0
-ATOMS_TYPE = 2
+ATOMS_TYPE = 3
 
 if ATOMS_TYPE == 1:
     nfeature = mu_list * eta_list
 elif ATOMS_TYPE == 2:
     nfeature = 2 * (mu_list * eta_list)
     nfeature_1 = (mu_list * eta_list)
+elif ATOMS_TYPE == 3:
+    nfeature = 3 * (mu_list * eta_list)
+    nfeature_1 = (mu_list * eta_list)
 else:
-    print(ATOMS_TYPE,' is greater then 2')
+    print(ATOMS_TYPE,' is greater then 3')
     exit(1)
 
 nfeature_3 = 3 * nfeature
@@ -79,12 +80,24 @@ def radial_feature_parallel(start_id,Nlocal,pos,a_type,boxsize,halfboxsize,Nlist
                     else:
                         if itag == True:
                             features[ii][count  ] += projection_x * temp3
-                            features[ii][count+2*nfeature_1] += projection_y * temp3
-                            features[ii][count+4*nfeature_1] += projection_z * temp3
-                        else:
-                            features[ii][count+nfeature_1] += projection_x * temp3
                             features[ii][count+3*nfeature_1] += projection_y * temp3
-                            features[ii][count+5*nfeature_1] += projection_z * temp3
+                            features[ii][count+6*nfeature_1] += projection_z * temp3
+                        else:
+                            ival = True   #for (01), (10) and (21) pairs
+                            if a_type[iatom] == 0 and a_type[jatom] == 2:
+                                ival = False
+                            elif a_type[iatom] == 1 and a_type[jatom] == 2:
+                                ival = False
+                            elif a_type[iatom] == 2 and a_type[jatom] == 0:
+                                ival = False
+                            if ival == True:
+                                features[ii][count+nfeature_1] += projection_x * temp3
+                                features[ii][count+4*nfeature_1] += projection_y * temp3
+                                features[ii][count+7*nfeature_1] += projection_z * temp3
+                            else:
+                                features[ii][count+2*nfeature_1] += projection_x * temp3
+                                features[ii][count+5*nfeature_1] += projection_y * temp3
+                                features[ii][count+8*nfeature_1] += projection_z * temp3
                     count += 1
     return [features,my_atomid]
 

@@ -6,10 +6,8 @@ from readtraininginput import *
 
 A_LAMDA=[-1,1]
 A_ZETA=[2.0,4.0,6.0]
-#A_ZETA=[2.0]
 A_ETA = [2.0,0.5,0.2,0.05]
 A_MU = [2.0,2.5,3.0,3.5,4.0]
-#A_MU=[1.8,2.0,2.25,2.5,2.75,3.0,3.25,3.5,3.75,4.0]
 A_LAMDA_LEN = len(A_LAMDA)
 ZETA_LEN = len(A_ZETA)
 ETA_LEN = len(A_ETA)
