@@ -46,7 +46,7 @@ contains
      print'(a)',repeat('-',60)
      print'(a,i6)','num_atoms: ', this%num_atoms
      print'(a,3f8.3, 3f8.2)','lattice: ', this%lattice
-     print'(a,f8.3)','volume: ', this%volume
+     print'(a,es15.5)','volume: ', this%volume
      print'(a,3f8.3)','k-vector: ', this%kvector
 
      print'(a, i6)', 'num_elements: ', size(this%elems)
@@ -67,6 +67,7 @@ contains
      integer :: iunit,ity,jty,k,kk
      real(8) :: dr, rho, dqk, prefactor, prefactor2
 
+     ! get the number density, rho
      rho = this%num_atoms/this%volume
 
      open(newunit=iunit,file='gr.dat',form='formatted')

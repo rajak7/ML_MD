@@ -12,9 +12,18 @@ program main
   integer :: num_cells(3)
 
   integer :: n, i,j,k, i1,j1,k1, ity, jty
+  character(len=256) :: argv
+  character(len=:),allocatable :: dirpath
+  logical :: is_there
 
   ! glob all files
-  filenames = get_filelist_xyz('DAT')
+  call getarg(1,argv)
+  dirpath = trim(adjustl(argv))
+  print'(a)', 'input data path: '//dirpath
+  inquire(file=dirpath, exist=is_there) 
+  if(.not. is_there) stop 'ERROR: input dir does not exist.'
+
+  filenames = get_filelist_xyz(dirpath)
 
   ! allocate z-element array
   allocate(mdframes(0))
