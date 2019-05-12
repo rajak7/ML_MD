@@ -3,8 +3,21 @@ module stat_mod
   implicit none
   real(8),parameter :: pi = 4.d0*datan(1.d0)
   integer,parameter :: NTABLES = 100
-  real(8),parameter :: RCUT = 10d0, DRI = NTABLES/RCUT
-  real(8),parameter :: QCUT = 20d0, DQ = QCUT/NTABLES
+  real(8),parameter :: RCUT = 15d0, DRI = NTABLES/RCUT
+  real(8),parameter :: QCUT = 10d0, DQ = QCUT/NTABLES
+
+  type NSD_type ! Neutron Scattering Data type
+     character(len=2) :: name
+     real(8) :: length
+  end type
+
+  type(NSD_type) :: NSD0(7)=[ NSD_type(name='Ge',length=8.185d-5), & 
+                              NSD_type(name='Te',length=5.80d-5), & 
+                              NSD_type(name='Se',length=7.970d-5), &
+                              NSD_type(name='C',length=6.646d-5), &
+                              NSD_type(name='Si',length=4.1491d-5), &
+                              NSD_type(name='O',length=5.803d-5), &
+                              NSD_type(name='Al',length=3.449d-5) ]
 
   type string_array
      character(len=:),allocatable :: str
@@ -21,6 +34,8 @@ module stat_mod
   type analysis_context
 
      type(string_array),allocatable :: elems(:)
+     type(NSD_type),allocatable :: NSD(:)
+
      real(8),allocatable :: concentration(:), gr(:,:,:), nr(:,:,:), ba(:,:,:,:), sq(:,:,:)
 
      integer :: num_atoms, num_atom_types
@@ -58,6 +73,11 @@ contains
      print*
      print'(a,10i6)', 'num_atoms_per_type: ', this%num_atoms_per_type
      print'(a,10f8.5)', 'concentration: ', this%concentration
+     print'(a $)', 'neutron scattering: '
+     do i=1, size(this%NSD)
+         print'(i1,a1,a2,es10.3,a $)', i, '-', this%NSD(i)%name, this%NSD(i)%length, ', '
+     enddo
+     print*
      print'(a)',repeat('-',60)
 
   end subroutine
@@ -65,7 +85,7 @@ contains
   subroutine save_analysis_results(this) 
      class(analysis_context) :: this
      integer :: iunit,ity,jty,k,kk
-     real(8) :: dr, rho, dqk, prefactor, prefactor2
+     real(8) :: dr, rho, dqk, Snq, Snq_denom, prefactor, prefactor2
 
      ! get the number density, rho
      rho = this%num_atoms/this%volume
@@ -91,7 +111,7 @@ contains
         do ity=1,size(this%elems)
         do jty=1,size(this%elems)
           !print'(f10.1,3x $)', this%gr(ity,jty,k)
-          prefactor2 = this%concentration(jty)*this%num_atoms_per_type(ity)*this%num_sample_frames
+          prefactor2 = this%concentration(jty) * this%num_atoms_per_type(ity) * this%num_sample_frames
           this%gr(ity,jty,k) = this%gr(ity,jty,k)/(prefactor*prefactor2)
           write(iunit, fmt='(f12.5,3x $)') this%gr(ity,jty,k)
         enddo; enddo
@@ -109,13 +129,18 @@ contains
         write(unit=iunit,fmt='(a5,a5 $)') & 
            ',    ',this%elems(ity)%str//'-'//this%elems(jty)%str
      enddo; enddo
-     write(unit=iunit,fmt=*)
+     write(unit=iunit,fmt='(a)') ', Snq'
+
+     ! get the denominator of Sn(q) 
+     Snq_denom = sum(this%NSD(:)%length * this%concentration(:))
+     Snq_denom = Snq_denom**2
 
      do kk=1, size(this%sq,dim=3)
 
         dqk = DQ*kk
         write(unit=iunit,fmt='(f12.5 $)') dqk
 
+        Snq = 0.d0
         do ity=1,size(this%elems)
         do jty=1,size(this%elems)
 
@@ -137,8 +162,11 @@ contains
            if(ity==jty) this%sq(ity,jty,kk) = this%sq(ity,jty,kk) + 1.d0
            write(iunit, fmt='(f12.5,3x $)') this%sq(ity,jty,kk)
 
+           Snq = Snq + this%sq(ity,jty,kk) * &
+                       sqrt(this%concentration(ity) * this%concentration(jty)) * & 
+                       this%NSD(ity)%length * this%NSD(jty)%length
         enddo; enddo
-        write(unit=iunit,fmt=*)
+        write(iunit, fmt='(f12.5)') Snq/Snq_denom
 
      enddo
      close(iunit)
@@ -148,7 +176,7 @@ contains
   function get_analysis_context_from_mdframe(oneframe) result(c)
      type(mdframe),intent(in) :: oneframe
      type(analysis_context) :: c
-     integer :: i, ne, ity, jty, kty, idx
+     integer :: i, j, ne, ity, jty, kty, idx
 
      c%num_atoms = oneframe%num_atoms
      c%lattice = oneframe%lattice
@@ -159,7 +187,15 @@ contains
         if( get_index(c%elems,oneframe%elems(i)%str) < 0 ) &
             c%elems = [c%elems, oneframe%elems(i)]
      enddo
-  
+
+     ! setup neutron scattering length data for existing atom types
+     allocate(c%NSD(size(c%elems)))
+     do i=1, size(c%elems)
+        do j=1, size(NSD0)
+           if(c%elems(i)%str==NSD0(j)%name) c%NSD(i) = NSD0(j)
+        enddo
+     enddo
+
      c%kvector(1:3)=2d0*pi/c%lattice(1:3)
 
      ne = size(c%elems)
