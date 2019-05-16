@@ -2,7 +2,6 @@ import numpy as np
 import math
 from feature import  cal_distance
 from feature import RCUTOFF_DEFAULT
-from readtraininginput import *
 
 A_LAMDA=[-1,1]
 A_ZETA=[2.0,4.0,6.0]
@@ -22,45 +21,6 @@ RC_Ang_DAMP = 8.0
 a_nfeature = A_LAMDA_LEN * ZETA_LEN * ETA_LEN * MU_LEN
 a_nfeature_3 = 3 * a_nfeature
 print('angular feature: ',a_nfeature,a_nfeature_3)
-
-def angular_feature_scalar(start_id,Nlocal,pos,a_type,boxsize,halfboxsize,Nlist):
-    features = np.zeros((Nlocal, a_nfeature), dtype='float32')
-    my_atomid = start_id
-    for ii in range(Nlocal):
-        iatom = start_id + ii
-        bond_list = list()
-        for jatom in Nlist[iatom,1:Nlist[iatom,0]+1]:
-            distance, rij = cal_distance(iatom, jatom, pos, halfboxsize, boxsize)
-            if (distance <= RC_ANGULAR and a_type[iatom] != a_type[jatom]):
-                bond_list.append(jatom)
-        N_angle = len(bond_list)
-        for jj in range(N_angle-1):
-            jatom = bond_list[jj]
-            distance_ij, r_ij = cal_distance(iatom, jatom, pos, halfboxsize, boxsize)
-            RIJ_DAMP = 0.5 * (1.0 + math.cos(3.14 * distance_ij / RC_Ang_DAMP))
-            dis_ij2 = distance_ij*distance_ij
-            for kk in range(jj+1,N_angle):
-                katom = bond_list[kk]
-                distance_ik, r_ik = cal_distance(iatom, katom, pos, halfboxsize, boxsize)
-                RIK_DAMP = 0.5 * (1.0 + math.cos(3.14 * distance_ik / RC_Ang_DAMP))
-                dis_ik2 = distance_ik*distance_ik
-                theta_ijk = np.dot(r_ij, r_ik) / (distance_ij * distance_ik)
-                dis_tot2 = dis_ij2 + dis_ik2
-                print("theta_ijk",np.arccos(theta_ijk)*180.0/3.14,iatom,jatom,katom,N_angle)
-                count = 0
-                for lval in A_LAMDA:
-                    cos_val = 1 + lval*theta_ijk
-                    for  zval in A_ZETA:
-                        two_zval = (2.0**(1.0-zval))*(cos_val**zval)
-                        for etaval in A_ETA:
-                            exp_ij_ik = math.exp(-1.0 * etaval * dis_tot2)
-                            features[ii,count] += two_zval * exp_ij_ik * RIJ_DAMP * RIK_DAMP
-                            count += 1
-                            #compute Ga
-                            #compute Gb
-    print(features[0,:])
-    return [features,my_atomid]
-
 
 def angular_feature_parallel(start_id,Nlocal,pos,a_type,boxsize,halfboxsize,Nlist):
     features = np.zeros((Nlocal, a_nfeature_3), dtype='float32')
@@ -123,12 +83,4 @@ def angular_feature_parallel(start_id,Nlocal,pos,a_type,boxsize,halfboxsize,Nlis
                                 features[ii][count+1*a_nfeature] += (G_1[0]*dis_fact*ga_fact + G_2[0]*dis_fact*gb_fact)
                                 features[ii][count+2*a_nfeature] += (G_1[0]*dis_fact*ga_fact + G_2[0]*dis_fact*gb_fact)
                                 count +=1
-
-    #print(features[0,:])
     return [features,my_atomid]
-
-
-#Natoms, boxsize, atype, position, force = read_training_data('DATA_GeTe/1.xyz')
-#Neighbor = makeneighbourlist_0(position, boxsize, Natoms, Rcutsq)
-#halfboxsize = 0.5 * boxsize
-#angular_feature_parallel(10,1,position,atype,boxsize,halfboxsize,Neighbor)
