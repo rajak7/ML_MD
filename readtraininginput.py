@@ -1,5 +1,7 @@
 import numpy as np
 MAX_NEIGH = 800     #max neighbors per atom
+atom_dict={"Si":0,"C":1,"Al":0,"O":1,"Ge":0,"Sb":1,"Te":2,"H":0}
+element={}
 
 def read_training_data(filename):
     with open(filename,'r') as inputfile:
@@ -13,12 +15,10 @@ def read_training_data(filename):
         ii=0
         for val in inputfile:
             val=val.strip().split()
-            if val[0] == 'Ge':
-                atype[ii] = 0
-            elif val[0] == 'Sb':
-                atype[ii] = 1
-            elif val[0] == 'Te':
-                atype[ii] = 2
+            if val[0] in atom_dict:
+                atype[ii] = atom_dict[val[0]]
+                if atom_dict[val[0]] not in element:
+                    element[atom_dict[val[0]]] = val[0]
             else:
                 print("Invalid atom type")
                 exit(1)
