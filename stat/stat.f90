@@ -11,9 +11,12 @@ module stat_mod
      real(8) :: length
   end type
 
-  type(NSD_type) :: NSD0(7)=[ NSD_type(name='Ge',length=8.185d-5), & 
-                              NSD_type(name='Te',length=5.80d-5), & 
+  ! neutron scattering length data are from 
+  !  https://www.nist.gov/ncnr/neutron-scattering-lengths-list
+  type(NSD_type) :: NSD0(8)=[ NSD_type(name='Ge',length=8.185d-5), & 
                               NSD_type(name='Se',length=7.970d-5), &
+                              NSD_type(name='Sb',length=5.57d-5), &
+                              NSD_type(name='Te',length=5.80d-5), & 
                               NSD_type(name='C',length=6.646d-5), &
                               NSD_type(name='Si',length=4.1491d-5), &
                               NSD_type(name='O',length=5.803d-5), &
