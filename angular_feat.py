@@ -75,12 +75,12 @@ def angular_feature_parallel(start_id,Nlocal,pos,a_type,boxsize,halfboxsize,Nlis
                             cos_l_m = cos_l_m_1 * cos_l
                             const_fact = 2**(1-zval)
                             ga_fact = zval * lval * const_fact * cos_l_m_1
-                            gb_fact = const_fact * cos_l_m
-                            for eval in A_ETA:
-                                gb_fact *= (-2.0 * eval)
-                                dis_fact = math.exp(-1.0*eval*dis2_ij_mu) * math.exp(-1.0*eval*dis2_ik_mu)
+                            gb_fact0 = const_fact * cos_l_m
+                            for e_val in A_ETA:
+                                gb_fact = (-2.0 * e_val)*gb_fact0
+                                dis_fact = math.exp(-1.0*e_val*dis2_ij_mu) * math.exp(-1.0*e_val*dis2_ik_mu)
                                 features[ii][count             ] += (G_1[0]*dis_fact*ga_fact + G_2[0]*dis_fact*gb_fact)
-                                features[ii][count+1*a_nfeature] += (G_1[0]*dis_fact*ga_fact + G_2[0]*dis_fact*gb_fact)
-                                features[ii][count+2*a_nfeature] += (G_1[0]*dis_fact*ga_fact + G_2[0]*dis_fact*gb_fact)
+                                features[ii][count+1*a_nfeature] += (G_1[1]*dis_fact*ga_fact + G_2[1]*dis_fact*gb_fact)
+                                features[ii][count+2*a_nfeature] += (G_1[2]*dis_fact*ga_fact + G_2[2]*dis_fact*gb_fact)
                                 count +=1
     return [features,my_atomid]
