@@ -28,10 +28,9 @@ A_LAMDA=[-1,1]
 A_ZETA=[2.0,4.0,6.0]
 A_ETA = [2.0,0.5,0.2,0.05]
 A_MU = [2.0,2.5,3.0,3.5,4.0]
-
 RC_ANGULAR = 4.0
 RC_Ang_DAMP = 8.0
 
 for mean and std
-Si---> Ge
-C----> Se
+Si---> Ge  -----> 0
+C----> Se  -----> 1
