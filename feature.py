@@ -6,8 +6,8 @@ eta=[0.5,1.0,2.0,3.0,8.0]
 mu_list = len(mu)
 eta_list = len(eta)
 
-RCUTOFF_DEFAULT = 8.00
-RCUTOFF_DAMP = 12.0
+RCUTOFF_DEFAULT = 9.50
+RCUTOFF_DAMP = 15.0
 ATOMS_TYPE = 2
 
 nfeature_1 = (mu_list * eta_list)

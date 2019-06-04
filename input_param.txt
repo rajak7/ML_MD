@@ -1,0 +1,7 @@
+1      1      2               # istep, iprint, ini_new
+1     0.5     10             # iscale_v, coeff_quench, iscale_step
+1500.0  4.05                 # req_temp, lattice_constant
+4   4   4                    # ncell(3)
+0.0005  9.50 25.0             # DT, CUTOFF, f_scale to scale forces during MD
+#MASS of all atoms in the simulation (GeSe2)
+72.64 78.96

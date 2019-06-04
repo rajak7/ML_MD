@@ -1,6 +1,6 @@
 import numpy as np
 MAX_NEIGH = 800     #max neighbors per atom
-atom_dict={"Si":0,"C":1,"Al":0,"O":1,"Ge":0,"Sb":1,"Te":2,"H":0}
+atom_dict={"Si":0,"C":1,"Al":0,"O":1,"Ge":0,"Sb":1,"Se":1,"Te":2,"H":0}
 element={}
 
 def read_training_data(filename):
@@ -41,6 +41,7 @@ def makelinkedlist(Natoms,boxsize,cellsize,positions):
                 ig[val] -=1
         if np.min(ig) < 0 or ig[0] >= ng[0] or ig[1] >=ng[1] or ig[2] >= ng[2]:
             print("atoms out of bound",ig,ng)
+            print(positions[ii,:])
             exit(1)
         llst[ii] = lshd[ig[0]][ig[1]][ig[2]]
         lshd[ig[0]][ig[1]][ig[2]] = ii
