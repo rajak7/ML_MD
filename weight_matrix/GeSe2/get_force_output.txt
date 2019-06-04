@@ -1,0 +1,7 @@
+xx&x1&mean&stddev:  (24576, 930) (310,) (310,) (310,)
+layer,xnew.shape:  0 (512,) 	 predicted:  0.0 	w&b shapes:  (310, 512) (512,)
+layer,xnew.shape:  1 (1024,) 	 predicted:  0.3070735 	w&b shapes:  (512, 1024) (1024,)
+layer,xnew.shape:  2 (512,) 	 predicted:  0.33473638 	w&b shapes:  (1024, 512) (512,)
+layer,xnew.shape:  3 (1,) 	 predicted:  -10.45724 	w&b shapes:  (512, 1) (1,)
+
+predicted force:  [-10.45724]
