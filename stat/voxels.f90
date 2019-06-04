@@ -222,7 +222,6 @@ contains
     ! receiver needs to be indexed with the same range as passer
     allocate( c(DIMS(1):DIMS(4),DIMS(2):DIMS(5),DIMS(3):DIMS(6)) )
 
-    ! allocate zero-size array
     do i=DIMS(1),DIMS(4)
     do j=DIMS(2),DIMS(5)
     do k=DIMS(3),DIMS(6)
