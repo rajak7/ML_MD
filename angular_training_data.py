@@ -14,7 +14,7 @@ Rcutsq=Rcut*Rcut
 cellsize = np.array([Rcut,Rcut,Rcut],dtype='float32')
 print('Cutoff Distance and its square',Rcut,Rcutsq,nfeature_3,a_nfeature_3)
 nprocessor =  8
-ichunk = 64 
+ichunk = 48
 pool = multiprocessing.Pool(processes=nprocessor)
 
 def construct_feature(filename):
@@ -63,8 +63,8 @@ def construct_feature(filename):
 
 
 #------xyz to feature vector for NN training-----------
-nfiles = 3
-filename = 'SiC/'
+nfiles = 1
+filename = 'DATA_GeSe2/'
 for val in range(nfiles):
     f_name=filename+str((val+1)*1)+'.xyz'
     print('reading file: ',f_name)
