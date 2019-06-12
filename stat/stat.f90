@@ -2,9 +2,9 @@ module stat_mod
 
   implicit none
   real(8),parameter :: pi = 4.d0*datan(1.d0)
-  integer,parameter :: NTABLES = 100
-  real(8),parameter :: RCUT = 15d0, DRI = NTABLES/RCUT
-  real(8),parameter :: QCUT = 10d0, DQ = QCUT/NTABLES
+  integer,parameter :: NTABLES = 2000
+  real(8),parameter :: RCUT = 20d0, DRI = NTABLES/RCUT
+  real(8),parameter :: QCUT = 30d0, DQ = QCUT/NTABLES
 
   type NSD_type ! Neutron Scattering Data type
      character(len=2) :: name
@@ -13,14 +13,17 @@ module stat_mod
 
   ! neutron scattering length data are from 
   !  https://www.nist.gov/ncnr/neutron-scattering-lengths-list
-  type(NSD_type) :: NSD0(8)=[ NSD_type(name='Ge',length=8.185d-5), & 
+  type(NSD_type) :: NSD0(11)=[ NSD_type(name='Ge',length=8.185d-5), & 
                               NSD_type(name='Se',length=7.970d-5), &
                               NSD_type(name='Sb',length=5.57d-5), &
                               NSD_type(name='Te',length=5.80d-5), & 
                               NSD_type(name='C',length=6.646d-5), &
                               NSD_type(name='Si',length=4.1491d-5), &
                               NSD_type(name='O',length=5.803d-5), &
-                              NSD_type(name='Al',length=3.449d-5) ]
+                              NSD_type(name='Al',length=3.449d-5), &
+                              NSD_type(name='H',length=-3.7390d-5), &
+                              NSD_type(name='Na',length=3.63d-5), &
+                              NSD_type(name='Cl',length=9.5770d-5) ]
 
   type string_array
      character(len=:),allocatable :: str
@@ -152,7 +155,8 @@ contains
 
            do k=1,size(this%gr,dim=3)
               dr = k/DRI
-              prefactor = (this%gr(ity,jty,k)-1.d0)*cos(0.5d0*pi*dr/RCUT) ! (gr - 1)*taper
+              !prefactor = (this%gr(ity,jty,k)-1.d0)*cos(0.5d0*pi*dr/RCUT) ! (gr - 1)*taper
+              prefactor = (this%gr(ity,jty,k)-1.d0) ! (gr - 1)*taper
               this%sq(ity,jty,kk) = this%sq(ity,jty,kk) + &
                   dr*dr*prefactor*sin(dr*dqk)/(dr*dqk)/DRI
            enddo
